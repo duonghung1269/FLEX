@@ -136,6 +136,10 @@
 		3A4C95431B5B21410088C3F2 /* FLEXNetworkObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4C94C31B5B21410088C3F2 /* FLEXNetworkObserver.m */; };
 		3A4C95471B5B217D0088C3F2 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A4C95461B5B217D0088C3F2 /* libz.dylib */; };
 		4562B93521EE25B600CFF34C /* EntryPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4562B93421EE25B600CFF34C /* EntryPoint.m */; };
+		4562B93721EE2DCA00CFF34C /* FLEXModAppsTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4562B93621EE2DCA00CFF34C /* FLEXModAppsTableViewController.h */; };
+		4562B93921EE2E4600CFF34C /* FLEXModAppsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4562B93821EE2E4600CFF34C /* FLEXModAppsTableViewController.m */; };
+		4562B93C21EE344B00CFF34C /* FLEX8BallPoolModTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4562B93B21EE344B00CFF34C /* FLEX8BallPoolModTableViewController.h */; };
+		4562B93E21EE345700CFF34C /* FLEX8BallPoolModTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4562B93D21EE345700CFF34C /* FLEX8BallPoolModTableViewController.m */; };
 		679F64861BD53B7B00A8C94C /* FLEXCookiesTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 679F64841BD53B7B00A8C94C /* FLEXCookiesTableViewController.h */; };
 		679F64871BD53B7B00A8C94C /* FLEXCookiesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 679F64851BD53B7B00A8C94C /* FLEXCookiesTableViewController.m */; };
 		779B1ECE1C0C4D7C001F5E49 /* FLEXDatabaseManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 779B1EC01C0C4D7C001F5E49 /* FLEXDatabaseManager.h */; };
@@ -319,6 +323,10 @@
 		3A4C94C41B5B21410088C3F2 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3A4C95461B5B217D0088C3F2 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		4562B93421EE25B600CFF34C /* EntryPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EntryPoint.m; sourceTree = "<group>"; };
+		4562B93621EE2DCA00CFF34C /* FLEXModAppsTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLEXModAppsTableViewController.h; sourceTree = "<group>"; };
+		4562B93821EE2E4600CFF34C /* FLEXModAppsTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLEXModAppsTableViewController.m; sourceTree = "<group>"; };
+		4562B93B21EE344B00CFF34C /* FLEX8BallPoolModTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLEX8BallPoolModTableViewController.h; sourceTree = "<group>"; };
+		4562B93D21EE345700CFF34C /* FLEX8BallPoolModTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLEX8BallPoolModTableViewController.m; sourceTree = "<group>"; };
 		679F64841BD53B7B00A8C94C /* FLEXCookiesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLEXCookiesTableViewController.h; sourceTree = "<group>"; };
 		679F64851BD53B7B00A8C94C /* FLEXCookiesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLEXCookiesTableViewController.m; sourceTree = "<group>"; };
 		779B1EC01C0C4D7C001F5E49 /* FLEXDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLEXDatabaseManager.h; sourceTree = "<group>"; };
@@ -572,6 +580,7 @@
 		3A4C949A1B5B21410088C3F2 /* GlobalStateExplorers */ = {
 			isa = PBXGroup;
 			children = (
+				4562B93A21EE33DF00CFF34C /* 8BallPool */,
 				779B1EBF1C0C4D7C001F5E49 /* DatabaseBrowser */,
 				3A4C949B1B5B21410088C3F2 /* FLEXClassesTableViewController.h */,
 				3A4C949C1B5B21410088C3F2 /* FLEXClassesTableViewController.m */,
@@ -596,6 +605,8 @@
 				3A4C94AB1B5B21410088C3F2 /* FLEXWebViewController.h */,
 				3A4C94AC1B5B21410088C3F2 /* FLEXWebViewController.m */,
 				3A4C94AD1B5B21410088C3F2 /* SystemLog */,
+				4562B93621EE2DCA00CFF34C /* FLEXModAppsTableViewController.h */,
+				4562B93821EE2E4600CFF34C /* FLEXModAppsTableViewController.m */,
 			);
 			path = GlobalStateExplorers;
 			sourceTree = "<group>";
@@ -652,6 +663,15 @@
 				3A4C95461B5B217D0088C3F2 /* libz.dylib */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4562B93A21EE33DF00CFF34C /* 8BallPool */ = {
+			isa = PBXGroup;
+			children = (
+				4562B93B21EE344B00CFF34C /* FLEX8BallPoolModTableViewController.h */,
+				4562B93D21EE345700CFF34C /* FLEX8BallPoolModTableViewController.m */,
+			);
+			path = 8BallPool;
 			sourceTree = "<group>";
 		};
 		779B1EBF1C0C4D7C001F5E49 /* DatabaseBrowser */ = {
@@ -726,6 +746,7 @@
 				3A4C94DD1B5B21410088C3F2 /* FLEXHeapEnumerator.h in Headers */,
 				3A4C94DB1B5B21410088C3F2 /* FLEXViewExplorerViewController.h in Headers */,
 				3A4C95321B5B21410088C3F2 /* FLEXSystemLogTableViewCell.h in Headers */,
+				4562B93721EE2DCA00CFF34C /* FLEXModAppsTableViewController.h in Headers */,
 				3A4C94F91B5B21410088C3F2 /* FLEXArgumentInputNumberView.h in Headers */,
 				3A4C94DF1B5B21410088C3F2 /* FLEXMultilineTableViewCell.h in Headers */,
 				3A4C953A1B5B21410088C3F2 /* FLEXNetworkSettingsTableViewController.h in Headers */,
@@ -788,6 +809,7 @@
 				C395D6D921789BD800BEAD4D /* FLEXColorExplorerViewController.h in Headers */,
 				94A515181C4CA1D70063292F /* FLEXManager+Private.h in Headers */,
 				3A4C94E11B5B21410088C3F2 /* FLEXResources.h in Headers */,
+				4562B93C21EE344B00CFF34C /* FLEX8BallPoolModTableViewController.h in Headers */,
 				779B1ED81C0C4D7C001F5E49 /* FLEXTableLeftCell.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -902,6 +924,7 @@
 				224D49A91C673AB5000EAB86 /* FLEXRealmDatabaseManager.m in Sources */,
 				2EF6B04D1D494BE50006BDA5 /* FLEXNetworkCurlLogger.m in Sources */,
 				94A515201C4CA1F10063292F /* FLEXWindow.m in Sources */,
+				4562B93E21EE345700CFF34C /* FLEX8BallPoolModTableViewController.m in Sources */,
 				3A4C95121B5B21410088C3F2 /* FLEXPropertyEditorViewController.m in Sources */,
 				3A4C95391B5B21410088C3F2 /* FLEXNetworkRecorder.m in Sources */,
 				3A4C950E1B5B21410088C3F2 /* FLEXIvarEditorViewController.m in Sources */,
@@ -940,6 +963,7 @@
 				3A4C94DA1B5B21410088C3F2 /* FLEXViewControllerExplorerViewController.m in Sources */,
 				779B1ED51C0C4D7C001F5E49 /* FLEXTableContentCell.m in Sources */,
 				3A4C94E21B5B21410088C3F2 /* FLEXResources.m in Sources */,
+				4562B93921EE2E4600CFF34C /* FLEXModAppsTableViewController.m in Sources */,
 				94A515281C4CA2080063292F /* FLEXToolbarItem.m in Sources */,
 				3A4C94D81B5B21410088C3F2 /* FLEXSetExplorerViewController.m in Sources */,
 				3A4C95311B5B21410088C3F2 /* FLEXSystemLogMessage.m in Sources */,

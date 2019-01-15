@@ -7,6 +7,7 @@
 //
 
 #import "FLEXGlobalsTableViewController.h"
+#import "FLEXModAppsTableViewController.h"
 #import "FLEXUtility.h"
 #import "FLEXLibrariesTableViewController.h"
 #import "FLEXClassesTableViewController.h"
@@ -23,6 +24,7 @@
 static __weak UIWindow *s_applicationWindow = nil;
 
 typedef NS_ENUM(NSUInteger, FLEXGlobalsRow) {
+    FLEXGlobalsRowModApps,
     FLEXGlobalsRowNetworkHistory,
     FLEXGlobalsRowSystemLog,
     FLEXGlobalsRowLiveObjects,
@@ -206,6 +208,14 @@ typedef NS_ENUM(NSUInteger, FLEXGlobalsRow) {
                 };
                 viewControllerFuture = ^{
                     return [[FLEXNetworkHistoryTableViewController alloc] init];
+                };
+                break;
+            case FLEXGlobalsRowModApps:
+                titleFuture = ^{
+                    return @"🎮 Mod Apps";
+                };
+                viewControllerFuture = ^{
+                    return [[FLEXModAppsTableViewController alloc] init];
                 };
                 break;
             case FLEXGlobalsRowCount:
