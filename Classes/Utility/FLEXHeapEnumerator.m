@@ -22,7 +22,8 @@ typedef struct {
 
 static void range_callback(task_t task, void *context, unsigned type, vm_range_t *ranges, unsigned rangeCount)
 {
-    if (!context) {
+    flex_object_enumeration_block_t block = (__bridge flex_object_enumeration_block_t)context;
+    if (!block) {
         return;
     }
     
@@ -39,12 +40,12 @@ static void range_callback(task_t task, void *context, unsigned type, vm_range_t
 #endif
         // If the class pointer matches one in our set of class pointers from the runtime, then we should have an object.
         if (CFSetContainsValue(registeredClasses, (__bridge const void *)(tryClass))) {
-            (*(flex_object_enumeration_block_t __unsafe_unretained *)context)((__bridge id)tryObject, tryClass);
+            block((__bridge id)tryObject, tryClass);
         }
     }
 }
 
-static kern_return_t reader(__unused task_t remote_task, vm_address_t remote_address, __unused vm_size_t size, void **local_memory)
+static kern_return_t memory_reader(__unused task_t remote_task, vm_address_t remote_address, __unused vm_size_t size, void **local_memory)
 {
     *local_memory = (void *)remote_address;
     return KERN_SUCCESS;
@@ -59,64 +60,18 @@ static kern_return_t reader(__unused task_t remote_task, vm_address_t remote_add
     // Refresh the class list on every call in case classes are added to the runtime.
     [self updateRegisteredClasses];
     
-    // Inspired by:
+    // For another exmple of enumerating through malloc ranges (which helped my understanding of the api) see:
     // http://llvm.org/svn/llvm-project/lldb/tags/RELEASE_34/final/examples/darwin/heap_find/heap/heap_find.cpp
-    // https://gist.github.com/samdmarshall/17f4e66b5e2e579fd396
-    
+    // Also https://gist.github.com/samdmarshall/17f4e66b5e2e579fd396
     vm_address_t *zones = NULL;
     unsigned int zoneCount = 0;
-    kern_return_t result = malloc_get_all_zones(TASK_NULL, reader, &zones, &zoneCount);
-    
+    kern_return_t result = malloc_get_all_zones(mach_task_self(), &memory_reader, &zones, &zoneCount);
     if (result == KERN_SUCCESS) {
         for (unsigned int i = 0; i < zoneCount; i++) {
             malloc_zone_t *zone = (malloc_zone_t *)zones[i];
-            malloc_introspection_t *introspection = zone->introspect;
-            NSString *zoneName = @(zone->zone_name);
-
-            // We only need to look at the default malloc zone.
-            // This may explain why some zone functions are
-            // sometimes invalid; perhaps not all zones support them?
-            if (![zoneName isEqualToString:@"DefaultMallocZone"] || !introspection) {
-                continue;
+            if (zone->introspect && zone->introspect->enumerator) {
+                zone->introspect->enumerator(mach_task_self(), (__bridge void *)(block), MALLOC_PTR_IN_USE_RANGE_TYPE, zones[i], &memory_reader, &range_callback);
             }
-
-            void (*lock_zone)(malloc_zone_t *zone)   = introspection->force_lock;
-            void (*unlock_zone)(malloc_zone_t *zone) = introspection->force_unlock;
-
-            // Callback has to unlock the zone so we freely allocate memory inside the given block
-            flex_object_enumeration_block_t callback = ^(__unsafe_unretained id object, __unsafe_unretained Class actualClass) {
-                unlock_zone(zone);
-                block(object, actualClass);
-                lock_zone(zone);
-            };
-
-            // The largest realistic memory address varies by platform.
-            // Only 48 bits are used by 64 bit machines while
-            // 32 bit machines use all bits.
-            //
-            // __LP64__ is defined as 1 for both arm64 and x86_64
-            // via: clang -dM -arch [arm64|x86_64] -E -x c /dev/null | grep LP
-#if __LP64__
-            static uintptr_t MAX_REALISTIC_ADDRESS = 0x0000FFFFFFFFFFFF;
-            BOOL lockZoneValid = lock_zone != nil && (uintptr_t)lock_zone < MAX_REALISTIC_ADDRESS;
-            BOOL unlockZoneValid = unlock_zone != nil && (uintptr_t)unlock_zone < MAX_REALISTIC_ADDRESS;
-#else
-            BOOL lockZoneValid = lock_zone != nil;
-            BOOL unlockZoneValid = unlock_zone != nil;
-#endif
-
-            // There is little documentation on when and why
-            // any of these function pointers might be NULL
-            // or garbage, so we resort to checking for NULL
-            // and impossible memory addresses at least
-            if (introspection->enumerator && lockZoneValid && unlockZoneValid) {
-                lock_zone(zone);
-                introspection->enumerator(TASK_NULL, (void *)&callback, MALLOC_PTR_IN_USE_RANGE_TYPE, (vm_address_t)zone, reader, &range_callback);
-                unlock_zone(zone);
-            }
-
-            // Only one zone to enumerate
-            break;
         }
     }
 }
@@ -134,6 +89,26 @@ static kern_return_t reader(__unused task_t remote_task, vm_address_t remote_add
         CFSetAddValue(registeredClasses, (__bridge const void *)(classes[i]));
     }
     free(classes);
+}
+
++ (NSMutableArray *)instancesForClassName:(NSString *)className
+{
+    const char *classNameCString = [className UTF8String];
+    NSMutableArray *instances = [NSMutableArray array];
+    [FLEXHeapEnumerator enumerateLiveObjectsUsingBlock:^(__unsafe_unretained id object, __unsafe_unretained Class actualClass) {
+
+        if (strcmp(classNameCString, class_getName(actualClass)) == 0) {
+            NSLog(@"===8ball.huhuhuhuhuhuh");
+            // Note: objects of certain classes crash when retain is called. It is up to the user to avoid tapping into instance lists for these classes.
+            // Ex. OS_dispatch_queue_specific_queue
+            // In the future, we could provide some kind of warning for classes that are known to be problematic.
+            if (malloc_size((__bridge const void *)(object)) > 0) {
+                [instances addObject:object];
+            }
+        }
+    }];
+
+    return instances;
 }
 
 @end
