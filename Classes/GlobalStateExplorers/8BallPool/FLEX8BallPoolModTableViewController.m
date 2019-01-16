@@ -146,20 +146,52 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
 
 #pragma mark - Inject methods
 
+- (int) _moddedGetAimForCue:(int)arg {
+    NSLog(@"8ball._moddedGetAimForCue called, original aim value = %ul", arg);
+    return 200;
+}
+
 - (void)injectInfiniteGuideline
 {
     SEL originalSelector = NSSelectorFromString(@"getAimForCue:");
-    SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:originalSelector];
+    SEL swizzledSelector = NSSelectorFromString(@"_moddedGetAimForCue:");
     
     Class userInfoClass = NSClassFromString(@"UserInfo");
-    
+    Method originalMethod = class_getInstanceMethod(userInfoClass, originalSelector);
+    if (!originalMethod) {
+        NSLog(@"8ball could not find getAimForCue: from UserInfo class");
+        return;
+    }
+//    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+//    if (!swizzledMethod) {
+//        NSLog(@"8ball could not find _moddedGetAimForCue: from FLEX8BallPoolModTableViewController class");
+//        return;
+//    }
+//
+//    BOOL didAddMethod =
+//    class_addMethod(userInfoClass,
+//                    swizzledSelector,
+//                    method_getImplementation(swizzledMethod),
+//                    method_getTypeEncoding(swizzledMethod));
+//
+//    if (didAddMethod) {
+//        NSLog(@"8ball did add method, replaced originalMethod with swizzedselector");
+//        class_replaceMethod(userInfoClass,
+//                            swizzledSelector,
+//                            method_getImplementation(originalMethod),
+//                            method_getTypeEncoding(originalMethod));
+//    } else {
+//        NSLog(@"8ball method existed, exchanged originalMethod with swizzedselector");
+//        method_exchangeImplementations(originalMethod, swizzledMethod);
+//    }
+//
     typedef int (^ModdedAimForCue)(int);
     ModdedAimForCue implementationBlock = ^int(int cueId) {
         NSLog(@"8ball._moddedGetAimForCue called, original aim value = %ul", cueId);
-        return 200;
+        return 50;
     };
     
-    [FLEXUtility replaceImplementationOfKnownSelector:originalSelector onClass:userInfoClass withBlock:implementationBlock swizzledSelector:swizzledSelector];
+    [FLEXUtility replaceImplementationOfKnownSelector:originalSelector onClass:userInfoClass withBlock:implementationBlock swizzledSelector:[FLEXUtility swizzledSelectorForSelector:originalSelector]];
 }
 
 @end
