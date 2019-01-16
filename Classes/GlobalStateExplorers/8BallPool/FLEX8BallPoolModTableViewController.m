@@ -10,6 +10,7 @@
 #import "FLEXUtility.h"
 #import "FLEXManager+Private.h"
 #import "FLEXGlobalsTableViewControllerEntry.h"
+#import <objc/runtime.h>
 
 typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
     FLEX8BallPoolRowGuideline,
@@ -132,6 +133,7 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
         case FLEX8BallPoolRowGuideline:
             // Swizzling guideline length here
             NSLog(@"8ball guideline click");
+            [self injectInfiniteGuideline];
             break;
         case FLEX8BallPoolRowCount:
             break;
@@ -140,6 +142,49 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
 //    UIViewController *viewControllerToPush = [self viewControllerToPushForRowAtIndexPath:indexPath];
 //
 //    [self.navigationController pushViewController:viewControllerToPush animated:YES];
+}
+
+#pragma mark - Inject methods
+
+- (int) _moddedGetAimForCue:(int)arg {
+    NSLog(@"8ball._moddedGetAimForCue called, original aim value = %ul", arg);
+    return 200;
+}
+
+- (void)injectInfiniteGuideline
+{
+    SEL originalSelector = NSSelectorFromString(@"getAimForCue:");
+    SEL swizzledSelector = NSSelectorFromString(@"_moddedGetAimForCue:");
+    
+    Class userInfoClass = NSClassFromString(@"UserInfo");
+    Method originalMethod = class_getInstanceMethod(userInfoClass, originalSelector);
+    if (!originalMethod) {
+        NSLog(@"8ball could not find getAimForCue: from UserInfo class");
+        return;
+    }
+    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+    if (!swizzledMethod) {
+        NSLog(@"8ball could not find _moddedGetAimForCue: from FLEX8BallPoolModTableViewController class");
+        return;
+    }
+    
+    BOOL didAddMethod =
+    class_addMethod(userInfoClass,
+                    swizzledSelector,
+                    method_getImplementation(swizzledMethod),
+                    method_getTypeEncoding(swizzledMethod));
+
+    if (didAddMethod) {
+        NSLog(@"8ball did add method, replaced originalMethod with swizzedselector");
+        class_replaceMethod(userInfoClass,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+    } else {
+        NSLog(@"8ball method existed, exchanged originalMethod with swizzedselector");
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+    
 }
 
 @end

@@ -437,4 +437,24 @@
     }
 }
 
++ (void)replaceImplementationOfSelector:(SEL)selector withSelector:(SEL)swizzledSelector forClass:(Class)cls implementationBlock:(id)implementationBlock undefinedBlock:(id)undefinedBlock
+{
+    if ([self instanceRespondsButDoesNotImplementSelector:selector class:cls]) {
+        return;
+    }
+    
+    IMP implementation = imp_implementationWithBlock((id)([cls instancesRespondToSelector:selector] ? implementationBlock : undefinedBlock));
+    
+    Method oldMethod = class_getInstanceMethod(cls, selector);
+    if (oldMethod) {
+        Method newMethod = class_getInstanceMethod(cls, swizzledSelector);
+        
+        class_addMethod(cls, swizzledSelector, implementation, method_getTypeEncoding(newMethod));
+        
+        method_exchangeImplementations(oldMethod, newMethod);
+    } else {
+        class_addMethod(cls, selector, implementation, method_getTypeEncoding(oldMethod));
+    }
+}
+
 @end
