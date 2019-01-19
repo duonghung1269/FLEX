@@ -8,12 +8,14 @@
 
 #import "FLEX8BallPoolModTableViewController.h"
 #import "FLEXUtility.h"
+#import "FLEXHeapEnumerator.h"
 #import "FLEXManager+Private.h"
 #import "FLEXGlobalsTableViewControllerEntry.h"
 #import <objc/runtime.h>
 
 typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
     FLEX8BallPoolRowGuideline,
+    FLEX8BallPoolRowSendSelectedCue,
     FLEX8BallPoolRowCount
 };
 
@@ -37,6 +39,14 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
             case FLEX8BallPoolRowGuideline:
                 titleFuture = ^{
                     return @"🎱 Guideline Length";
+                };
+                viewControllerFuture = ^{
+                    return [[UIViewController alloc] init];
+                };
+                break;
+            case FLEX8BallPoolRowSendSelectedCue:
+                titleFuture = ^{
+                    return @"🎱 Set Selected Cue - Archon";
                 };
                 viewControllerFuture = ^{
                     return [[UIViewController alloc] init];
@@ -135,9 +145,14 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
             NSLog(@"8ball guideline click");
             [self injectInfiniteGuideline];
             break;
+        case FLEX8BallPoolRowSendSelectedCue:
+            [self injectSetSelectedCue];
+            break;
         case FLEX8BallPoolRowCount:
             break;
     }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
 //    UIViewController *viewControllerToPush = [self viewControllerToPushForRowAtIndexPath:indexPath];
 //
@@ -147,21 +162,26 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
 #pragma mark - Inject methods
 
 - (int) _moddedGetAimForCue:(int)arg {
-    NSLog(@"8ball._moddedGetAimForCue called, original aim value = %ul", arg);
+    NSLog(@"8ball._moddedGetAimForCue called, original cue value = %ul", arg);
     return 200;
+}
+
+- (void) _moddedSendSelectedCue:(int)arg {
+    [self _moddedSendSelectedCue:200];
+    NSLog(@"8ball._moddedSendSelectedCue called, original cue value = %ul", arg);
 }
 
 - (void)injectInfiniteGuideline
 {
     SEL originalSelector = NSSelectorFromString(@"getAimForCue:");
-    SEL swizzledSelector = NSSelectorFromString(@"_moddedGetAimForCue:");
+//    SEL swizzledSelector = NSSelectorFromString(@"_moddedGetAimForCue:");
     
     Class userInfoClass = NSClassFromString(@"UserInfo");
-    Method originalMethod = class_getInstanceMethod(userInfoClass, originalSelector);
-    if (!originalMethod) {
-        NSLog(@"8ball could not find getAimForCue: from UserInfo class");
-        return;
-    }
+//    Method originalMethod = class_getInstanceMethod(userInfoClass, originalSelector);
+//    if (!originalMethod) {
+//        NSLog(@"8ball could not find getAimForCue: from UserInfo class");
+//        return;
+//    }
 //    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
 //    if (!swizzledMethod) {
 //        NSLog(@"8ball could not find _moddedGetAimForCue: from FLEX8BallPoolModTableViewController class");
@@ -188,10 +208,69 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
     typedef int (^ModdedAimForCue)(int);
     ModdedAimForCue implementationBlock = ^int(int cueId) {
         NSLog(@"8ball._moddedGetAimForCue called, original aim value = %ul", cueId);
-        return 50;
+        return 75;
     };
     
     [FLEXUtility replaceImplementationOfKnownSelector:originalSelector onClass:userInfoClass withBlock:implementationBlock swizzledSelector:[FLEXUtility swizzledSelectorForSelector:originalSelector]];
+}
+
+- (void)injectSetSelectedCue {
+    NSMutableArray *userInfoObjects = [FLEXHeapEnumerator instancesForClassName:@"UserInfo"];
+    if ([userInfoObjects count] == 0) {
+        [FLEXUtility showAlert:@"UserInfo" message:@"Could not find any instances of UserInfo"];
+        return;
+    }
+    
+    NSObject *userInfoObj = [userInfoObjects objectAtIndex:0];
+    
+    int archonCueId = 345;
+    
+    // invoke addOwnCue
+    SEL addOwnedCueSelector = NSSelectorFromString(@"addOwnedCue:");
+    if ([userInfoObj respondsToSelector:addOwnedCueSelector]) {
+        // Cant use performSelector as int is not object type, so use NSInvocation instead
+        NSMethodSignature *signature = [userInfoObj methodSignatureForSelector:addOwnedCueSelector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setSelector:addOwnedCueSelector];
+        [invocation setArgument:&archonCueId atIndex:2]; // 0 and 1 are reserved
+        [invocation invokeWithTarget:userInfoObj];
+        
+        [FLEXUtility showAlert:@"Success" message:@"Invoke addOwnedCue successfully!!"];
+    }
+    
+    // invoke addOwnedCue shouldStoreLocally
+    SEL addOwnedCueStoreLocallySelector = NSSelectorFromString(@"addOwnedCue:shouldStoreLocally:");
+    if ([userInfoObj respondsToSelector:addOwnedCueStoreLocallySelector]) {
+        NSMethodSignature *signature = [userInfoObj methodSignatureForSelector:addOwnedCueStoreLocallySelector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setSelector:addOwnedCueStoreLocallySelector];
+        BOOL storeLocally = YES;
+        [invocation setArgument:&archonCueId atIndex:2]; // 0 and 1 are reserved
+        [invocation setArgument:&storeLocally atIndex:3];
+        [invocation invokeWithTarget:userInfoObj];
+        [FLEXUtility showAlert:@"Success" message:@"Invoke addOwnedCue store locally successfully!!"];
+    }
+    
+    NSMutableArray *networkHandlerObjects = [FLEXHeapEnumerator instancesForClassName:@"NetworkHandler"];
+    if ([networkHandlerObjects count] == 0) {
+        [FLEXUtility showAlert:@"NetworkHandler" message:@"Could not find any instances of NetworkHandler"];
+        return;
+    }
+    
+    NSObject *networkHandlerObj = [networkHandlerObjects objectAtIndex:0];
+    
+    // invoke addOwnCue
+    SEL sendSelectedCueSelector = NSSelectorFromString(@"sendSelectedCue:");
+    if ([networkHandlerObj respondsToSelector:sendSelectedCueSelector]) {
+        NSMethodSignature *signature = [networkHandlerObj methodSignatureForSelector:sendSelectedCueSelector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setSelector:sendSelectedCueSelector];
+        [invocation setArgument:&archonCueId atIndex:2]; // 0 and 1 are reserved
+        [invocation invokeWithTarget:networkHandlerObj];
+        
+        [FLEXUtility showAlert:@"Success" message:@"Invoke sendSelectedCue successfully!!"];
+    }
+
 }
 
 @end

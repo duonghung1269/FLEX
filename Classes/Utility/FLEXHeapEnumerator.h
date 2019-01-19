@@ -13,5 +13,6 @@ typedef void (^flex_object_enumeration_block_t)(__unsafe_unretained id object, _
 @interface FLEXHeapEnumerator : NSObject
 
 + (void)enumerateLiveObjectsUsingBlock:(flex_object_enumeration_block_t)block;
++ (NSMutableArray *)instancesForClassName:(NSString *)className;
 
 @end
