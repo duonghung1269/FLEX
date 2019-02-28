@@ -16,6 +16,7 @@
 typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
     FLEX8BallPoolRowGuideline,
     FLEX8BallPoolRowSendSelectedCue,
+    FLEX8BallPoolRowSendShowGuideline,    
     FLEX8BallPoolRowCount
 };
 
@@ -47,6 +48,14 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
             case FLEX8BallPoolRowSendSelectedCue:
                 titleFuture = ^{
                     return @"🎱 Set Selected Cue - Archon";
+                };
+                viewControllerFuture = ^{
+                    return [[UIViewController alloc] init];
+                };
+                break;
+            case FLEX8BallPoolRowSendShowGuideline:
+                titleFuture = ^{
+                    return @"🎱 Show Guideline mode";
                 };
                 viewControllerFuture = ^{
                     return [[UIViewController alloc] init];
@@ -147,6 +156,9 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
             break;
         case FLEX8BallPoolRowSendSelectedCue:
             [self injectSetSelectedCue];
+            break;
+        case FLEX8BallPoolRowSendShowGuideline:
+            [self injectShowGuidelineMode];
             break;
         case FLEX8BallPoolRowCount:
             break;
@@ -271,6 +283,65 @@ typedef NS_ENUM(NSUInteger, FLEX8BallPoolModRow) {
         [FLEXUtility showAlert:@"Success" message:@"Invoke sendSelectedCue successfully!!"];
     }
 
+}
+
+- (void) injectShowGuidelineMode {
+    // GameManager
+    NSMutableArray *gameManagerObjects = [FLEXHeapEnumerator instancesForClassName:@"GameManager"];
+    if ([gameManagerObjects count] == 0) {
+        [FLEXUtility showAlert:@"GameManager" message:@"Could not find any instances of GameManager"];
+        return;
+    }
+    
+    NSObject *gameManagerObj = [gameManagerObjects objectAtIndex:0];
+    
+    Ivar ivar = class_getInstanceVariable([gameManagerObj class], "mHideGuidelinesMode");
+    assert(ivar);
+    CFTypeRef gameManagerObjRef = CFBridgingRetain(gameManagerObj);
+    BOOL *ivarPtr = (BOOL *)((uint8_t *)gameManagerObjRef + ivar_getOffset(ivar));
+    *ivarPtr = FALSE;
+    CFBridgingRelease(gameManagerObjRef);
+    [FLEXUtility showAlert:@"Success" message:@"Patched GameManager.mHideGuidelinesMode to false successfully!"];
+    
+    // VisualCue
+    NSMutableArray *visualCueObjects = [FLEXHeapEnumerator instancesForClassName:@"VisualCue"];
+    if ([visualCueObjects count] == 0) {
+        [FLEXUtility showAlert:@"VisualCue" message:@"Could not find any instances of VisualCue"];
+        return;
+    }
+    
+    NSObject *visualCueObj = [visualCueObjects objectAtIndex:0];
+    
+    Ivar ivarVisualCue = class_getInstanceVariable([visualCueObj class], "mHideGuidelinesMode");
+    assert(ivarVisualCue);
+    CFTypeRef visualCueObjRef = CFBridgingRetain(visualCueObj);
+    BOOL *ivarPtrVisualCue = (BOOL *)((uint8_t *)visualCueObjRef + ivar_getOffset(ivarVisualCue));
+    *ivarPtrVisualCue = FALSE;
+//    CFBridgingRelease(visualCueObjRef);
+    [FLEXUtility showAlert:@"Success" message:@"Patched VisualCue.mHideGuidelinesMode to false successfully!"];
+    
+    // set mDrawInputInDirectionOfBall = true
+    Ivar ivarDrawInputInDirectionOfBall = class_getInstanceVariable([visualCueObj class], "mDrawInputInDirectionOfBall");
+    assert(ivarDrawInputInDirectionOfBall);
+    BOOL *ivarDrawInputInDirectionOfBallPtr = (BOOL *)((uint8_t *)visualCueObjRef + ivar_getOffset(ivarDrawInputInDirectionOfBall));
+    *ivarDrawInputInDirectionOfBallPtr = TRUE;
+    
+    // set mDrawMultiplierRanges = true
+    Ivar ivarDrawMultiplierRanges = class_getInstanceVariable([visualCueObj class], "mDrawMultiplierRanges");
+    assert(ivarDrawMultiplierRanges);
+    BOOL *ivarDrawMultiplierRangesPtr = (BOOL *)((uint8_t *)visualCueObjRef + ivar_getOffset(ivarDrawMultiplierRanges));
+    *ivarDrawMultiplierRangesPtr = TRUE;
+    
+    // invoke draw
+    SEL drawSelector = NSSelectorFromString(@"draw");
+    if ([visualCueObj respondsToSelector:drawSelector]) {
+        NSMethodSignature *signature = [visualCueObj methodSignatureForSelector:drawSelector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setSelector:drawSelector];
+        [invocation invokeWithTarget:visualCueObj];
+    }
+    
+    CFBridgingRelease(visualCueObjRef);
 }
 
 @end
