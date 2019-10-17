@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FLEXManager.h"
+#import <Security/SecureTransport.h>
 
 @interface CodeInjection: NSObject
 @end
@@ -21,7 +22,7 @@ static void __attribute__((constructor)) initialize(void){
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         NSLog(@"SHOW FLEX Explorer");
         [[FLEXManager sharedManager] showExplorer];
-    });
+    });    
 }
 
 @end
