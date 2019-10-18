@@ -11,9 +11,11 @@
 #import "FLEXManager+Private.h"
 #import "FLEXGlobalsTableViewControllerEntry.h"
 #import "FLEX8BallPoolModTableViewController.h"
+#import "FLEXMediumModTableViewController.h"
 
 typedef NS_ENUM(NSUInteger, FLEXModAppsRow) {
     FLEXModAppsRow8BallPool,
+    FLEXModAppsRowMedium,
     FLEXGlobalsRowCount
 };
 
@@ -40,6 +42,14 @@ typedef NS_ENUM(NSUInteger, FLEXModAppsRow) {
                 };
                 viewControllerFuture = ^{
                     return [[FLEX8BallPoolModTableViewController alloc] init];
+                };
+                break;
+            case FLEXModAppsRowMedium:
+                titleFuture = ^{
+                    return @"ℳ Medium";
+                };
+                viewControllerFuture = ^{
+                    return [[FLEXMediumModTableViewController alloc] init];
                 };
                 break;
             case FLEXGlobalsRowCount:

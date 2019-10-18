@@ -139,6 +139,8 @@
 		3A4C95471B5B217D0088C3F2 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A4C95461B5B217D0088C3F2 /* libz.dylib */; };
 		454EFD63232C6E51006022C2 /* UIViewController+UIViewController_HideKeyBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 454EFD61232C6E51006022C2 /* UIViewController+UIViewController_HideKeyBoard.h */; };
 		454EFD64232C6E51006022C2 /* UIViewController+UIViewController_HideKeyBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 454EFD62232C6E51006022C2 /* UIViewController+UIViewController_HideKeyBoard.m */; };
+		4551A2C82359B6D4006033F4 /* FLEXMediumModTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4551A2C62359B6D4006033F4 /* FLEXMediumModTableViewController.h */; };
+		4551A2C92359B6D4006033F4 /* FLEXMediumModTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4551A2C72359B6D4006033F4 /* FLEXMediumModTableViewController.m */; };
 		4562B93521EE25B600CFF34C /* EntryPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4562B93421EE25B600CFF34C /* EntryPoint.m */; };
 		4562B93721EE2DCA00CFF34C /* FLEXModAppsTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4562B93621EE2DCA00CFF34C /* FLEXModAppsTableViewController.h */; };
 		4562B93921EE2E4600CFF34C /* FLEXModAppsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4562B93821EE2E4600CFF34C /* FLEXModAppsTableViewController.m */; };
@@ -329,6 +331,8 @@
 		3A4C95461B5B217D0088C3F2 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		454EFD61232C6E51006022C2 /* UIViewController+UIViewController_HideKeyBoard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+UIViewController_HideKeyBoard.h"; sourceTree = "<group>"; };
 		454EFD62232C6E51006022C2 /* UIViewController+UIViewController_HideKeyBoard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+UIViewController_HideKeyBoard.m"; sourceTree = "<group>"; };
+		4551A2C62359B6D4006033F4 /* FLEXMediumModTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLEXMediumModTableViewController.h; sourceTree = "<group>"; };
+		4551A2C72359B6D4006033F4 /* FLEXMediumModTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLEXMediumModTableViewController.m; sourceTree = "<group>"; };
 		4562B93421EE25B600CFF34C /* EntryPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EntryPoint.m; sourceTree = "<group>"; };
 		4562B93621EE2DCA00CFF34C /* FLEXModAppsTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLEXModAppsTableViewController.h; sourceTree = "<group>"; };
 		4562B93821EE2E4600CFF34C /* FLEXModAppsTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLEXModAppsTableViewController.m; sourceTree = "<group>"; };
@@ -598,6 +602,7 @@
 		3A4C949A1B5B21410088C3F2 /* GlobalStateExplorers */ = {
 			isa = PBXGroup;
 			children = (
+				4551A2BB2359B5CA006033F4 /* Medium */,
 				4562B93A21EE33DF00CFF34C /* 8BallPool */,
 				779B1EBF1C0C4D7C001F5E49 /* DatabaseBrowser */,
 				3A4C949B1B5B21410088C3F2 /* FLEXClassesTableViewController.h */,
@@ -683,6 +688,15 @@
 				F23430B11F3BA315455D2F3E /* Pods_FLEX_FLEXTestsMethodsList.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4551A2BB2359B5CA006033F4 /* Medium */ = {
+			isa = PBXGroup;
+			children = (
+				4551A2C62359B6D4006033F4 /* FLEXMediumModTableViewController.h */,
+				4551A2C72359B6D4006033F4 /* FLEXMediumModTableViewController.m */,
+			);
+			path = Medium;
 			sourceTree = "<group>";
 		};
 		4562B93A21EE33DF00CFF34C /* 8BallPool */ = {
@@ -826,6 +840,7 @@
 				3A4C94D71B5B21410088C3F2 /* FLEXSetExplorerViewController.h in Headers */,
 				3A4C94D91B5B21410088C3F2 /* FLEXViewControllerExplorerViewController.h in Headers */,
 				3A4C952E1B5B21410088C3F2 /* FLEXWebViewController.h in Headers */,
+				4551A2C82359B6D4006033F4 /* FLEXMediumModTableViewController.h in Headers */,
 				3A4C95111B5B21410088C3F2 /* FLEXPropertyEditorViewController.h in Headers */,
 				3A4C94E91B5B21410088C3F2 /* FLEXHierarchyTableViewController.h in Headers */,
 				3A4C94F31B5B21410088C3F2 /* FLEXArgumentInputFontView.h in Headers */,
@@ -1040,6 +1055,7 @@
 				3A4C951F1B5B21410088C3F2 /* FLEXClassesTableViewController.m in Sources */,
 				3A4C94C61B5B21410088C3F2 /* FLEXArrayExplorerViewController.m in Sources */,
 				C3DA55FF21A76406005DDA60 /* FLEXMutableFieldEditorViewController.m in Sources */,
+				4551A2C92359B6D4006033F4 /* FLEXMediumModTableViewController.m in Sources */,
 				3A4C95081B5B21410088C3F2 /* FLEXDefaultEditorViewController.m in Sources */,
 				779B1ED11C0C4D7C001F5E49 /* FLEXMultiColumnTableView.m in Sources */,
 				3A4C94EE1B5B21410088C3F2 /* FLEXArgumentInputColorView.m in Sources */,
